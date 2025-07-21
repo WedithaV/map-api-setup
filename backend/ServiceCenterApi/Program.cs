@@ -3,34 +3,41 @@ using ServiceCenterApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Force binding to all network interfaces
+builder.WebHost.UseUrls("http://0.0.0.0:5152", "https://0.0.0.0:7023");
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Add CORS to allow requests from the web app
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowWebApp", builder =>
-        builder.WithOrigins("http://localhost:3000")
+    options.AddPolicy("AllowAll", builder =>
+        builder.AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader());
 });
 
 var app = builder.Build();
 
-// Enable Swagger always
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+    // Disable HTTPS redirection in development to avoid SSL cert issues with self-signed certs
+    // app.UseHttpsRedirection();  // <-- Commented out in development
+}
+else
+{
+    // Enable HTTPS redirection in production environment
+    app.UseHttpsRedirection();
+}
 
-app.UseCors("AllowWebApp");
-
+app.UseCors("AllowAll");
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

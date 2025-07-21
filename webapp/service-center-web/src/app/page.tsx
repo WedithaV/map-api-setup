@@ -12,7 +12,7 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('https://localhost:5001/api/servicecenters', {
+      await axios.post('http://localhost:5152/api/servicecenters', {
         name,
         latitude: location.lat,
         longitude: location.lng,

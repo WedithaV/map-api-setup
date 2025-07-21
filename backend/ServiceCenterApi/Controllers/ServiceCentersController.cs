@@ -36,7 +36,7 @@ public async Task<ActionResult<IEnumerable<ServiceCenter>>> GetNearbyServiceCent
 {
     var serviceCenters = await _context.ServiceCenters.ToListAsync();
     var nearbyCenters = serviceCenters
-        .Where(sc => CalculateDistance(lat, lng, sc.Latitude, sc.Longitude) <= 1) // 1km radius
+        .Where(sc => CalculateDistance(lat, lng, sc.Latitude, sc.Longitude) <= 200) // 1km radius
         .ToList();
     return Ok(nearbyCenters);
 }
